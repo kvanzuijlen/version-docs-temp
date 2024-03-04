@@ -30,6 +30,6 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: poetry install --no-interaction --no-root
-      - run: poetry run mike deploy --push --force --update-aliases 0.2 latest
+      - run: poetry run mike deploy --push --update-aliases 0.1 latest
         env:
           GOOGLE_ANALYTICS_KEY: ${{ secrets.GOOGLE_ANALYTICS_KEY }}
