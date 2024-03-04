@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name version-cli[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - name: Install Poetry
+        run: pipx install poetry==1.8.1
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: pyproject.toml
+          cache: 'poetry'
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+      - run: poetry install --no-interaction --no-root
+      - run: poetry run mike deploy --push --force --update-aliases 0.2 latest
+        env:
+          GOOGLE_ANALYTICS_KEY: ${{ secrets.GOOGLE_ANALYTICS_KEY }}
